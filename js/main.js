@@ -23,13 +23,6 @@ SoundBoard.create = function() {
     button.append(
       $("<div>").text(key).css({ "text-align": "center" })
     );
-    /*
-    button.load('images/button.svg', function(response) {
-      console.log($(response));
-      button.find('.button_svg_letter').html(key).css('text-align','center');
-      console.log(button.find('.button_svg_letter').parent().html());
-    });
-    */
     player.append(button);
 
     var audio = $('<audio>').attr('id', 'player' + key);
@@ -66,12 +59,12 @@ SoundBoard.create = function() {
       audio[0].pause();
     });
     audio.bind("timeupdate", function() {
-      pos = (this.currentTime / this.duration) * 100,
-      $elm.find('.status').css({width: pos + '%'});
-      var rem = parseInt(this.duration - this.currentTime, 10),
-      pos = (this.currentTime / this.duration) * 100,
+      var pos = (this.currentTime / this.duration) * 100,
+      rem = parseInt(this.duration - this.currentTime, 10),
       mins = Math.floor(rem/60,10),
       secs = rem - mins*60;
+
+      $elm.find('.status').css({width: pos + '%'});
       $elm.find(".countdown").text('-' + mins + ':' + (secs < 10 ? '0' + secs : secs));
     });
 
@@ -80,6 +73,7 @@ SoundBoard.create = function() {
       var loaded = parseInt(((this.buffered.end(0) / this.duration) * 100), 10);
       $elm.find(".countdown").text(loaded + "%");
     });
+
     audio.on('stop', function() {
       audio[0].pause();
       audio[0].currentTime = 0;

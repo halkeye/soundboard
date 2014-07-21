@@ -1,11 +1,17 @@
 {
-  "undef"         : true,
-  "unused"        : true,
-  "devel": true,
-  "es5": true,
-  "browser": true,
   "jquery": true,
-  "globals": {
-    "Mousetrap": false
-  }
+  "browser": true,
+  "esnext": false,
+  "bitwise": false,
+  "curly": false,
+  "eqeqeq": true,
+  "eqnull": true,
+  "immed": true,
+  "latedef": true,
+  "newcap": true,
+  "noarg": true,
+  "undef": true,
+  "strict": false,
+  "trailing": true,
+  "smarttabs": true
 }
