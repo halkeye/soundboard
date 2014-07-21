@@ -32,7 +32,7 @@ SoundBoard.create = function() {
     */
     player.append(button);
 
-    var audio = $('<audio src="silent.ogg"></audio>').attr('id', 'player' + key)
+    var audio = $('<audio>').attr('id', 'player' + key);
     player.append(audio);
 
     var info = $('<div class="info">');
