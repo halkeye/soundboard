@@ -1,0 +1,4 @@
+Guardfile
+vendor/*.zip
+soundboard/
+sounds/

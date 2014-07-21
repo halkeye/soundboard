@@ -1,0 +1,11 @@
+{
+  "undef"         : true,
+  "unused"        : true,
+  "devel": true,
+  "es5": true,
+  "browser": true,
+  "jquery": true,
+  "globals": {
+    "Mousetrap": false
+  }
+}
