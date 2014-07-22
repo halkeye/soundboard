@@ -1,10 +1,19 @@
 #stop {
-  background: transparent;
   border: 0;
-  height: 100px;
-  width: 100px;
-  background-color: red;
+  height: 110px;
+  width: 110px;
   margin: 10px 5px 5px 5px;
+  background-image: url(../images/button_grey_stop.png);
+  background-size: contain;
+
+  background-color: #c9302c;
+  border: 1px solid #ac2925;
+  border-radius: 6px;
+
+  box-shadow: 0 0 0.0em #000, 0 0 2px #000, 0 0 2px #505050;
+  float: left;
+
+  cursor:pointer;
 }
 .media_stop .fa-circle {
   color: #D3D3D3;
