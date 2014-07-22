@@ -2,3 +2,4 @@ Guardfile
 vendor/*.zip
 soundboard/
 sounds/
+node_modules/
