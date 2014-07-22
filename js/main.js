@@ -81,8 +81,6 @@ SoundBoard.create = function() {
       var $status = $elm.find('.status');
       $status.addClass('playing');
       player.addClass('playing');
-      console.log($status);
-
       audio[0].play();
     });
 
@@ -144,7 +142,7 @@ SoundBoard.create = function() {
 
   $("#stop").bind("click", function() {
     $("audio").trigger('audio.stop');
-  }).css();
+  });
 };
 $(document).ready(function() {
   SoundBoard.create();
