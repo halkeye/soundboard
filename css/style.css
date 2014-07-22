@@ -27,6 +27,7 @@ body {
 }
 
 .player {
+  cursor: pointer;
   position: relative;
   width: 158px;
   height: 110px;
