@@ -14,6 +14,7 @@
 }
 body {
   background: url(../images/bg.jpg) repeat top left;
+  margin-right: 149px;
 }
 
 .player {
@@ -93,7 +94,7 @@ body {
   background: rgba(255,0,0, 0.2);
 }
 .player .key {
-  z-index: 100;
+  /*z-index: 100; */
   position: absolute;
   top: 2px;
   right: 2px;
