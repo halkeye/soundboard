@@ -1,4 +1,5 @@
 {
+  "devel": true,
   "jquery": true,
   "browser": true,
   "esnext": false,
