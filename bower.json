@@ -1,9 +1,9 @@
 {
   "name": "soundboard",
   "version": "0.0.0",
-  "homepage": "https://github.com/oleeander/soundboard",
+  "homepage": "https://github.com/halkeye/soundboard",
   "authors": [
-    "Gavin Mogan <gavin@kodekoan.com>"
+    "Gavin Mogan <git@gavnimogan.com.com>"
   ],
   "license": "MIT",
   "ignore": [
