@@ -1,149 +1,180 @@
 /* global Mousetrap: false */
+"use strict";
 var keys = ["1", "2", "3", "4", "5", "6", "7", "8", "q", "w", "e", "r", "t", "z", "u", "i", "a", "s", "d", "f", "g", "h", "j", "k", "y", "x", "c", "v", "b", "n", "m", ","];
 var SoundBoard = {};
+
+/*!
+ * Run event after the DOM is ready
+ * (c) 2017 Chris Ferdinandi, MIT License, https://gomakethings.com
+ * @param  {Function} fn Callback function
+ */
+function onReady(fn) {
+	// Sanity check
+	if (typeof fn !== 'function') return;
+
+	// If document is already loaded, run method
+	if (document.readyState === 'interactive' || document.readyState === 'complete') {
+		return fn();
+	}
+
+	// Otherwise, wait until document is loaded
+	document.addEventListener('DOMContentLoaded', fn, false);
+}
+
+function togglePlay(audio) {
+  if (audio.paused) {
+    audio.play()
+  } else {
+    audio.pause()
+  }
+}
+
+
+function getAudioPlayer(id, url) {
+  return new Promise(function(resolve, reject) {
+    const audio = document.createElement("audio");
+    audio.setAttribute('id', id);
+    // const mp3 = document.createElement('source')
+    // mp3.src = url
+    // mp3.type = "audio/mpeg"
+    // audio.appendChild(mp3);
+    const ogg = document.createElement('source')
+    ogg.src = url
+    ogg.type = "audio/mpeg"
+    audio.appendChild(ogg);
+    audio.addEventListener('canplay', () => { resolve(audio); }, { options: { once: true }});
+    audio.addEventListener('error', () => { reject(); }, { options: { once: true }});
+  });
+}
+
 
 SoundBoard.delete = function() {
 };
 
 SoundBoard.create = function() {
   var count = 0;
-  $('*[data-sound]').each(function(idx, elm) {
+  document.querySelectorAll('*[data-sound]').forEach(function(elm, idx) {
     var key = keys[count] || false;
-    var $elm = $(elm);
-    $elm.addClass('player');
-    $elm.data('key', key);
-    $elm.css('position', 'relative');
+    elm.classList.add('player');
+    elm.style.position = 'relative';
+    elm.dataset.key = key;
 
-    var player = $('<div class="inner_player">').appendTo($elm);
-    $('<div class="status">').css({
-      'position': 'absolute',
-      'top': 0,
-      'left': 0
-    }).appendTo(player);
+    var player = document.createElement('div')
+    player.className = 'inner_player';
 
-    var button = $('<div class="key">');
-    button.css({
-      "background-color": "#d8d8d8"
-    });
-    button.append(
-      $("<div>").text(key).css({ "text-align": "center" })
-    );
-    player.append(button);
+    var status = document.createElement('div');
+    status.className='status';
+    status.style.position = 'absolute';
+    status.style.top = status.style.left = 0;
+    player.appendChild(status)
 
-    var audio = $('<audio>').attr('id', 'player' + key);
-    player.append(audio);
+    var button = document.createElement('div');
+    button.className='key';
+    button.style.backgroundColor = '#d8d8d8';
+    player.appendChild(button)
 
-    var info = $('<div class="info">');
-    info.append('<p class="countdown">-0:00</p>');
-    info.append('<p class="title">Bereit</p>');
-    player.append(info);
+    if (key) {
+      var keyElm = document.createElement('div');
+      keyElm.textContent = key;
+      keyElm.style.textAlign = 'center';
+      button.appendChild(keyElm);
+    }
 
-    /*var stopper = $('<p style="margin: -5px 0px -25px -80px;"><a href="#"><img src="images/control_stop.png" alt="stop" class="control_stop" /></a></p>');
-    player.append(stopper); */
+    getAudioPlayer('player' + key, elm.dataset.filename).then(function(audio) {
+      player.append(audio);
+      player.audioElm = audio;
 
-    var volume = $('<section class="volume"></span><div class="slider"></div><span class="volume_indicator"></span></section>');
-    var volume_slider = volume.find('.slider').slider({
-      range: "min",
-      min: 0,
-      max: 1,
-      step: 0.01,
-      value: audio[0].volume,
-      orientation: "vertical",
-      slide: function(event, ui) {
-        var $volume = volume.find('.volume_indicator');
-        var value = ui.value;
-        if(value <= 0.5) { $volume.css('background-position', '0 0'); }
-        else if (value <= 0.25) { $volume.css('background-position', '0 -25px'); }
-        else if (value <= 0.75) { $volume.css('background-position', '0 -50px'); }
-        else { $volume.css('background-position', '0 -75px'); }
-        audio[0].volume = value;
-      }
-    });
-    volume_slider.slider('option', 'slide').call(volume_slider, null, { value: audio[0].volume });
+      var info = document.createElement('div');
+      info.className = 'info';
 
-    $elm.append(volume);
+      var countdown = player.countdownElm = document.createElement('p');
+      countdown.className='countdown';
+      countdown.textContent = '-0:00';
+      info.appendChild(countdown);
 
-    audio.attr('src', $elm.data('filename'));
-    audio.attr('preload', 'preload');
-    $elm.addClass('filled');
-    info.find('.title').text($elm.data('filename').substr($elm.data('filename').lastIndexOf('/')+1));
+      var title = player.titleElm = document.createElement('p');
+      title.className='title';
+      title.textContent = elm.dataset.filename.split('/').pop();
+      info.appendChild(title);
 
-    audio.bind("audio.toggle", function() {
-			if(audio[0].paused) {
-        audio.trigger('audio.play');
-			} else {
-        //audio.trigger('audio.pause');
-        audio.trigger('audio.stop');
-			}
-		});
+      player.appendChild(info);
 
-    audio.bind('audio.play', function() {
-      var $status = $elm.find('.status');
-      $status.addClass('playing');
-      player.addClass('playing');
-      audio[0].play();
-    });
+      elm.classList.add('filled');
 
-    audio.on('audio.pause', function() {
-      audio[0].pause();
-    });
+      audio.addEventListener('play', function() {
+        player.querySelector('.status').classList.add('playing');
+        player.classList.add('playing');
+      });
+ 
+      audio.addEventListener("pause", function() {
+        elm.querySelectorAll('.playing').forEach(elm => elm.classList.remove('playing'));
+        this.currentTime = 0;
+      });
 
-    audio.on('audio.stop', function() {
-      audio[0].pause();
-      audio[0].currentTime = 0;
-    });
+      audio.addEventListener("ended", function() {
+        this.pause();
+      });
 
-    audio.bind("ended", function() {
-      $elm.find('.playing').removeClass('playing');
-      audio[0].pause();
-    });
+      audio.addEventListener("timeupdate", function() {
+        var pos = (this.currentTime / this.duration) * 100,
+        rem = parseInt(this.duration - this.currentTime, 10),
+        mins = Math.floor(rem/60,10),
+        secs = rem - mins*60;
+ 
+        player.querySelector('.status').style.width = pos + '%';
+        player.countdownElm.textContent = '-' + mins + ':' + (secs < 10 ? '0' + secs : secs);
+      });
 
-    audio.bind("timeupdate", function() {
-      var pos = (this.currentTime / this.duration) * 100,
-      rem = parseInt(this.duration - this.currentTime, 10),
-      mins = Math.floor(rem/60,10),
-      secs = rem - mins*60;
-
-      $elm.find('.status').css({width: pos + '%'});
-      $elm.find(".countdown").text('-' + mins + ':' + (secs < 10 ? '0' + secs : secs));
-    });
-
-    audio.bind("progress", function() {
-      if (this.buffered.length === 0) { return 0; }
-      var loaded = parseInt(((this.buffered.end(0) / this.duration) * 100), 10);
-      $elm.find(".countdown").text(loaded + "%");
+      audio.addEventListener("progress", function() {
+        if (this.buffered.length === 0) { return 0; }
+        var loaded = parseInt(((this.buffered.end(0) / this.duration) * 100), 10);
+        player.countdownElm.textContent = loaded + "%";
+      });
     });
 
     /*
     $("input").bind("change", function() {
-      $(this).parent().parent().parent().find('#player' + this.id.substr(1)).get(0).volume = this.value;
+      $(this).parent().parent().parent().find('#player' + this.id.substr(1)).volume = this.value;
       localStorage.setItem("volume_" + this.id.substr(1), this.value);
     });
     */
 
-    if (key !== false) {
-      Mousetrap.bind(key, function() { player.click(); });
-    }
+    // if (key !== false) {
+    //   Mousetrap.bind(key, function() { player.click(); });
+    // }
 
     count++;
+    elm.appendChild(player);
   });
 
-  var get_elm = function(elm) {
-    return $(elm).parents('*[data-sound]');
-  };
+  document.getElementById('board').addEventListener('click', function (event) {
 
-  $('#board').on('click', '.inner_player', function(e) {
-    get_elm(this).find('audio').trigger('audio.toggle');
-  });
-
+    // If the clicked element doesn't have the right selector, bail
+    if (!event.target.matches('.inner_player')) return;
+  
+    // Don't follow the link
+    event.preventDefault();
+  
+    togglePlay(event.target.audioElm);
+  
+  }, false);
+  
   /*$('#board').on('click', '.control_stop', function() {
     get_elm(this).find('audio').trigger('audio.stop');
   });*/
 
-  $("#stop").bind("click", function() {
-    $("audio").trigger('audio.stop');
+  document.getElementById('stop').addEventListener('click', function(e) {
+    e.preventDefault();
+    document.querySelectorAll('audio').forEach(audio => audio.pause());
   });
 };
-$(document).ready(function() {
+
+document.addEventListener('keypress', function(e) {
+  const container = document.querySelector('*[data-key="' + e.key + '"]');
+  if (!container) { return; }
+  togglePlay(container.querySelector('audio'))
+})
+
+onReady(function() {
   SoundBoard.create();
 });
