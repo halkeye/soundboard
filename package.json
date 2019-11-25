@@ -1,0 +1,20 @@
+{
+  "name": "soundboard",
+  "version": "1.0.0",
+  "description": "soundboard ==========",
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "true",
+    "build": "true"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/halkeye/soundboard.git"
+  },
+  "author": "Gavin Mogan <npm@halkeye.net>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/halkeye/soundboard/issues"
+  },
+  "homepage": "https://github.com/halkeye/soundboard#readme"
+}
