@@ -37,7 +37,7 @@ pipeline {
         SURGE = credentials('halkeye-surge')
       }
       steps {
-        sh 'SURGE_LOGIN=$SURGE_USR SURGE_TOKEN=$SURGE_PSW npx surge -p dist -d soundboard.gavinmogan.com'
+        sh 'SURGE_LOGIN=$SURGE_USR SURGE_TOKEN=$SURGE_PSW npx surge -p . -d soundboard.gavinmogan.com'
       }
     }
   }
